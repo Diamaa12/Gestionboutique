@@ -1,0 +1,117 @@
+#conteneur_right_layout{
+background-color:#3D3B3B;
+border:1px solid orange;
+}
+#conteneur_left_layout{
+background-color:#996a44;
+border:1px solid, yellow;
+padding:50px;
+}
+#main_layout{
+    background-color:grey;
+    border:2px solid red;
+}
+.product_name{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.date, .product{
+    font-family:'Tahoma', sans-serif;
+    font-size:22px;
+    font-weight:700;
+}
+
+.quantite_kg_unite{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.quantite_vendu{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.quantite_restants{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.prix_d_achat{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.prix_de_vente{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.total_vendu{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+.total_non_vendu{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+}
+
+.restants{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    margin-left:25px;
+
+}
+
+.total_vendue{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    margin-left:25px;
+}
+
+.total_non_vendue{
+    font-family:'Tahoma', sans-serif;
+    font-size:16px;
+    font-weight:600;
+    margin-left:25px;
+}
+.edit_quantite_kg_unite{
+    border-radius:5px;
+}
+.edit_quantite_vendu{
+    border-radius:5px;
+}
+.edit_prix_de_vente{
+    border-radius:5px;
+}
+.edit_prix_d_achat{
+    border-radius:5px;
+}
+.edit_quantite_kg_unite:focus{
+    border:2px solid #2EC903;
+    border-radius:4px;
+}
+.edit_quantite_vendu:focus{
+    border:2px solid #2EC903;
+    border-radius:4px;
+}
+.edit_prix_de_vente:focus{
+    border:2px solid #2EC903;
+    border-radius:4px;
+}
+.edit_prix_d_achat:focus{
+    border:2px solid #2EC903;
+    border-radius:4px;
+}
+.epuise{
+ color:#f76151;
+ font-size:18px;
+ border:1px solid #f76151;
+}
+.finis{
+    border:none;
+}

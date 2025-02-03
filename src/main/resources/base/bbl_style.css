@@ -1,0 +1,57 @@
+    QWidget {
+                 font-size: 20px;
+                 background-color: #f5f5f5;
+             }
+             QLabel {
+                 font-size: 20px;
+                 font-weight: bold;
+                 color: #333;
+                 margin-bottom: 20px;
+             }
+             QLineEdit {
+                 padding: 10px;
+                 margin-bottom: 20px;
+                 border: 1px solid #ccc;
+                 border-radius: 4px;
+                 font-size: 14px;
+                 min-width: 150px;
+
+             }
+             QFrame {
+                 padding: 2px;
+             }
+             #label_produits, #quantite_kg_unite, #quantite_vendu, #quantite_restants,
+             #prix_d_achat, #prix_de_vente, #total_vendu, #total_non_vendu{
+                font-family: 'Roboto', sans-serif;
+                font-weight:700;
+                font-size:20px;
+             }
+             #label_produits, .label_produits{
+             color:#77767b;
+             }
+             #quantite_kg_unite{
+                color:#3585e5;
+             }
+             #quantite_vendu{
+                color:#36D85C;
+             }
+             #quantite_restants{
+                color:#F57600;
+             }
+             #prix_d_achat{
+                color:#8300F5;
+             }
+            #prix_de_vente{
+                color:#2ec37e;
+            }
+            #total_vendu{
+                color:#36D85C;
+            }
+            #total_non_vendu{
+                color:#DB3100;
+            }
+             .label_produits{
+                font-family:'Roboto', sans-serif;
+                font-size:16px;
+                font-weight:400;
+             }

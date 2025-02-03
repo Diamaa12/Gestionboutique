@@ -1,0 +1,18 @@
+#central_widget {
+border:1px solid yellow;
+}
+#nav_menu_layout{
+border:1px solid red;
+}
+#left_menu_layout{
+background-color: #f0f0f0;
+    color: #333;
+}
+#conteneur_nav_menu{
+background-color:grey;
+}
+#conteneur_left_menu_layout{
+background-color:#c4c4c4;
+}
+#conteneur_right_menu{
+background-color:#4c4c4c;}
