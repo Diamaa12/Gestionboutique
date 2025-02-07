@@ -20,7 +20,8 @@ if __name__ == '__main__':
     initialiser_config()
     appctxt = ApplicationContext()       # 1. Instantiate ApplicationContext
     window = LeyssareTech(ctx=appctxt)
-    window.resize(700, 900)
+    window.resize(600, 800)
+    window.center_window()
     window.show()
     printer = QPrinter()
     #window.handlerPrint(printer)

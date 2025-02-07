@@ -32,9 +32,12 @@ class DatabasePostgre:
                                               database=database)
             self.connexion.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
             # IMPORTANT : Initialiser le LoggingConnection
-            cursor = self.connexion.cursor()
             #self.connexion.initialize(logger) # Initialise avec un curseur
-            return self.connexion
+            if self.connexion:
+                print("connexion à la base de données réussi.")
+                return self.connexion
+            else:
+                print("La connexion a échouée.")
         except Exception as e:
             print(f"Erreur lors de la connexion : {e}")
             return None

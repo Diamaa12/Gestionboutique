@@ -1,95 +1,112 @@
 #conteneur_right_layout{
 background-color:#3D3B3B;
-border:1px solid orange;
 }
 #conteneur_left_layout{
-background-color:#996a44;
-border:1px solid, yellow;
-padding:50px;
+background-color:#94633b;
+padding:0px;
 }
 #main_layout{
-    background-color:grey;
-    border:2px solid red;
+    background-color:#efefef;
+    border:none;
 }
 .product_name{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
     font-weight:600;
+    color:white;
 }
 .date, .product{
     font-family:'Tahoma', sans-serif;
-    font-size:22px;
-    font-weight:700;
+    font-size:16px;
+    font-weight:600;
+    color:white;
+}
+.grand_total{
+    font-family:"Tahoma", sans-serif;
+    font-size:16px;
+    font-weight:600;
+    color:white;
 }
 
 .quantite_kg_unite{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 .quantite_vendu{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 .quantite_restants{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 .prix_d_achat{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 .prix_de_vente{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 .total_vendu{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 .total_non_vendu{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
+    font-weight:500;
+    color:white;
 }
 
 .restants{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
-    margin-left:25px;
+    font-weight:400;
+    color:white;
 
 }
 
 .total_vendue{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
-    margin-left:25px;
+    font-weight:400;
+    color:white;
 }
 
 .total_non_vendue{
     font-family:'Tahoma', sans-serif;
     font-size:16px;
-    font-weight:600;
-    margin-left:25px;
+    font-weight:400;
+    color:white;
 }
 .edit_quantite_kg_unite{
     border-radius:5px;
+    border:2px solid rgba(76,76, 76, 0.7);
 }
 .edit_quantite_vendu{
     border-radius:5px;
+    border:2px solid rgba(76,76, 76, 0.7);
 }
 .edit_prix_de_vente{
     border-radius:5px;
+    border:2px solid rgba(76,76, 76, 0.7);
 }
 .edit_prix_d_achat{
     border-radius:5px;
+    border:2px solid rgba(76,76, 76, 0.7);
 }
 .edit_quantite_kg_unite:focus{
     border:2px solid #2EC903;

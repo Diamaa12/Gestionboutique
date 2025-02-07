@@ -11,7 +11,7 @@ def db_connector():
     port = 5432
     user = 'postgres'
     password = 'Galle11'
-    database = 'gestion_stock'
+    database = 'gestion_boutique'
     return [host, port, user, password, database]
 class AddProduitBarDialog(QDialog):
     produit_a_ajouter = Signal(str)
@@ -292,7 +292,7 @@ class AfficherResultatQuantite(QDialog):
         # Création du tableau QTableWidget
         self.table = QTableWidget(self)
         self.table.setColumnCount(2)
-        self.table.setHorizontalHeaderLabels(["Quantité re¢u ", "Date"])
+        self.table.setHorizontalHeaderLabels(["Quantité reçu en Kg/Unité ", "Date"])
         self.table.setSortingEnabled(True)  # Activer le tri des colonnes
 
         # Ajouter des options de redimensionnement
@@ -327,6 +327,8 @@ class AfficherResultatQuantite(QDialog):
                     # Si la date contient une heure, ignorer l'heure et se concentrer uniquement sur la date
                     date_object = datetime.strptime(date.split()[0], '%Y-%m-%d')
                     date = date_object.strftime('%d/%m/%Y')
+                    #On ajoute le "Le" à la date.
+                    date = f"Le {date}"
                 except ValueError:
                     # Gestion des erreurs (si la date n'est pas dans le bon format)
                     date = "Format Invalide"

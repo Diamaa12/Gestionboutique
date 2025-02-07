@@ -4,9 +4,9 @@ from PySide6.QtWidgets import QMainWindow, QWidget, QLabel, QLineEdit, QLayout, 
     QSizePolicy, QFormLayout
 
 import sys
-from PySide2.QtWidgets import QApplication, QMainWindow, QMenuBar, QVBoxLayout, QHBoxLayout, QWidget, QListWidget, \
+from PySide6.QtWidgets import QApplication, QMainWindow, QMenuBar, QVBoxLayout, QHBoxLayout, QWidget, QListWidget, \
     QTextEdit
-from PySide2.examples.corelib.tools.settingseditor.settingseditor import MainWindow
+#from PySide2.examples.corelib.tools.settingseditor.settingseditor import MainWindow
 
 
 

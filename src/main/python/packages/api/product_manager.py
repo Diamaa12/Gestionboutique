@@ -1,7 +1,8 @@
 import json
+import os
 from pathlib import Path
 
-PRODUCT_JSON_FILE = Path(__file__).parent.joinpath("Product/base/products.json")
+PRODUCT_JSON_FILE = Path(os.getenv("PROGRAMDATA")) / "BBLTech/PRODUCT_JSON/products.json"
 class ProductManager:
     def __init__(self, json_file=PRODUCT_JSON_FILE):
         # Nom du fichier JSON

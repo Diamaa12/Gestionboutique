@@ -11,7 +11,7 @@ from PySide6.QtCore import Qt, Signal
 from PySide6.QtGui import QTextDocument, QAction
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtWidgets import (QMainWindow, QMenuBar, QVBoxLayout, QHBoxLayout, QGridLayout,
-                               QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QStyle)
+                               QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QStyle, QApplication)
 
 
 #from gestion_boutique_console import handler
@@ -33,7 +33,9 @@ def db_connector():
     port = 5432
     user = 'postgres'
     password = 'Galle11'
-    database = 'gestion_stock'
+    database = 'gestion_boutique'
+    if host and password:
+        print('Connexion reussi.')
     return [host, port, user, password, database]
 
 class LeyssareTech(QMainWindow):
@@ -42,8 +44,7 @@ class LeyssareTech(QMainWindow):
         super().__init__()
         self.setWindowTitle("Leyssare Tech")
         self.ctx = ctx
-        self.setGeometry(100, 100, 700, 900)
-
+        self.setGeometry(100, 100, 600, 800)
         # Dictionnaire pour suivre les widgets associés à chaque produit
         self.product_widgets = {}
 
@@ -68,12 +69,27 @@ class LeyssareTech(QMainWindow):
         self.send_signal = []
         self.leytech_ui()
 
+    #Centrer l'application dans l'écran de l'utilisateur.
+    def center_window(self):
+        """Centrer la fenêtre sur l'écran actif"""
+        screen = QApplication.primaryScreen()  # Récupérer l'écran principal
+        screen_geometry = screen.availableGeometry()  # Taille de l'écran (hors barre des tâches)
+        # Si on a plusieurs écrans actif
+        screen = QApplication.screenAt(self.pos())  # Récupère l'écran actuel
+        if screen:
+            screen_geometry = screen.availableGeometry()
+        # Calcul des coordonnées X et Y pour centrer
+        x = screen_geometry.x() + (screen_geometry.width() - self.width()) // 2
+        y = screen_geometry.y() + (screen_geometry.height() - self.height()) // 2
+
+        self.move(x, y)  # Déplacer la fenêtre au centre
+
+
     def leytech_ui(self):
         self.my_main_window()
         self.create_widget()
         self.create_layout()
         self.create_qwidgets_conteneur()
-        self.add_layout_to_layout()
         self.add_layouts_to_widgets()
         self.set_layouts_to_widgets()
         self.add_widgets_to_layouts()
@@ -226,16 +242,9 @@ class LeyssareTech(QMainWindow):
         self.left_layout = QGridLayout()
         self.right_layout = QVBoxLayout()
 
-        self.prices_layout = QVBoxLayout()
-        self.input_items = QHBoxLayout()
-
     def create_qwidgets_conteneur(self):
         self.conteneur_right_layout = QWidget()
         self.conteneur_left_layout = QWidget()
-    def add_layout_to_layout(self):
-        #self.left_layout.addLayout(self.prices_layout, 1, 0)
-        #self.left_layout.addLayout(self.input_items, 1, 1)
-        pass
     def add_layouts_to_widgets(self):
         self.main_layout.addWidget(self.conteneur_left_layout, 0, 0)
         self.main_layout.addWidget(self.conteneur_right_layout, 0, 1)
@@ -246,9 +255,9 @@ class LeyssareTech(QMainWindow):
 
     def add_widgets_to_layouts(self):
         # Définir une taille fixe pour tous les QLineEdit
-        quantite_fixed_width = 100
+        quantite_fixed_width = 80
         quantite_fixed_height = 40
-        price_fixed_width = 175
+        price_fixed_width = 80
         price_fixed_height = 40
 
         self.left_layout.addWidget(self.product, 0, 0)
@@ -264,7 +273,7 @@ class LeyssareTech(QMainWindow):
 
         for idx, label in enumerate(self.produits_names, start=1):
             self.left_layout.addWidget(label, 0, idx)
-            label.setStyleSheet('margin:10px; padding:5px;')
+            label.setStyleSheet('margin:0px; padding:5px;')
         for index, edit in enumerate(self.edit_quantite_kg_unite, start=1):
             edit.setFixedSize(quantite_fixed_width, quantite_fixed_height)
             self.left_layout.addWidget(edit, 1, index)
@@ -298,7 +307,7 @@ class LeyssareTech(QMainWindow):
         self.right_layout.addWidget(self.date, alignment=Qt.AlignmentFlag.AlignTop)
         #On recupere la somme total dans l'api gestion_prix_quantite.somme_ttl_produit_vedue() et le passe au Qlabel
         #ttl_somme_produits_vendue = self.api_gestion_prix_quantite.somme_ttl_produits_vendue()
-        self.right_layout.addWidget(self.grand_ttl)
+        self.right_layout.addWidget(self.grand_ttl, alignment=Qt.AlignmentFlag.AlignCenter)
         self.right_layout.addWidget(self.btn_data_download)
         self.right_layout.addWidget(self.btn_reset)
         self.right_layout.addWidget(self.btn_scannen)
@@ -674,16 +683,12 @@ class LeyssareTech(QMainWindow):
         self.prix_de_vente.setProperty('class', 'prix_de_vente')
         self.total_vendu.setProperty('class', 'total_vendu')
         self.total_non_vendu.setProperty('class', 'total_non_vendu')
+        self.grand_ttl.setProperty("class", "grand_total")
 
         self.right_layout.setSpacing(20)
         self.right_layout.setContentsMargins(20, 20, 20, 20)
 
-
-        #self.conteneur_right_layout.setStyleSheet('background-color:#f76151;')
-        #self.conteneur_left_layout.setStyleSheet('background-color:#9ac2f2;')
-        #self.main_window.setStyleSheet('border:2px solid green;')
-        self.left_layout.setSpacing(50)
-        self.prices_layout.setContentsMargins(25, 0, 0, 15)
+        self.left_layout.setSpacing(25)
         self.left_layout.setContentsMargins(15, 5, 5, 25)
         ctx = self.ctx.get_resource('leyssare_tech.css')
         with open(ctx, 'r') as f:
