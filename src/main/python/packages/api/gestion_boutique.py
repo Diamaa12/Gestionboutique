@@ -454,13 +454,18 @@ class Boutiquehandler(QObject,):
             print('Une erreur est survenue.', e)
             return None
     def show_ttl_sommes_vendu_de_tous_les_produit(self) -> Optional[float]:
-        cursor = self.connexion.cursor()
-        #On recupere la sommes des ventes pour tous les produits
-        requete = """SELECT COALESCE(SUM(ttl_somme_vendu), 0) FROM sommes;"""
-        cursor.execute(requete)
-        result = cursor.fetchone()
-        print("Somme vendue de tous les produit: ", result[0])
-        return result[0]
+        try:
+            cursor = self.connexion.cursor()
+            if cursor:
+                #On recupere la sommes des ventes pour tous les produits
+                requete = """SELECT COALESCE(SUM(ttl_somme_vendu), 0) FROM sommes;"""
+                cursor.execute(requete)
+                result = cursor.fetchone()
+                print("Somme vendue de tous les produit: ", result[0])
+                return result[0]
+        except Exception as e:
+            print(f"L'erreur suivante: {e} est survennue. ")
+            return None
     def show_historique_quantite_for_one_product(self, product_name:str) -> Optional[list]:
         id_produit = self.get_product_id(product_name)
         print(id_produit)
