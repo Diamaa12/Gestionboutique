@@ -12,7 +12,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 # Configuration
 BACKUP_FILE = r"C:\ProgramData\MyDBBackup\gestion_boutique.dump" if platform.system() == "Windows" else "/var/lib/myapp/mydatabase.dump"
 PG_ADMIN_USER = "postgres"
-PG_ADMIN_PASSWORD = "Galle11"
+PG_ADMIN_PASSWORD = ""
 PG_HOST = "localhost"
 PG_PORT = "5432"
 DB_NAME = "gestion_boutique"
