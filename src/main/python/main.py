@@ -25,20 +25,6 @@ if __name__ == '__main__':
     # Utilisation de %USERPROFILE% pour pointer vers le dossier de l'utilisateur courant
     # Utiliser le chemin relatif à partir du script Python
 
-    #if not is_postgres_installed():
-    #   logging.info('execution du fichier .bat')
-    #   script_path = str(pathlib.Path.cwd().parent, "resources/postgres_installateur/", "postgres_installateur/install_postgresql.bat")
-    #   scipt_install_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "resources", "postgres_installateur", "install_postgresql.bat")
-    #   print(f"rep actu", scipt_install_path)
-
-       #subprocess.run([scipt_install_path], shell=True)
-       #subprocess.run([scipt_install_path], shell=True)
-       #logging.info('execution du fichier .bat terminée')
-    #On lance le processus de création de base données
-    #if not database_exists():
-    #    logging.info('Creation de la base de donnée')
-    #    create_database()
-    #    logging.info('Creation de la base de donnée terminée')
     if is_postgresql_installed_and_setup():
         create_database()
         restore_database()
