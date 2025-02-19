@@ -4,6 +4,7 @@ __pycache__/
 *.pyo
 *.pyd
 
+*.pdf
 # Ignorer les fichiers de configuration locaux
 .env
 .secrets
@@ -17,6 +18,7 @@ dist/
 build/
 *.egg-info/
 target/
+NSIS_SCRIPT/	
 # Ignorer les fichiers de logs
 *.log
 
