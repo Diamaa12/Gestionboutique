@@ -158,7 +158,10 @@ class HistoriqueProduitBarDialog(QDialog):
         data = instance_data.get_historique_vente_par_plage_horaire(produit, date_debut.toPython(), date_fin.toPython())
         if data:
             self.affichage_resultat = AfficherResultatForOneProduct(data)
-            self.affichage_resultat.show()
+            #La difference entre la fonction show(), exec() et que la fonction show() bloque la fênetre pricipale
+            #au contraire la fonction exec() permet d'interargir avec la fênetre principale
+            #self.affichage_resultat.show()
+            self.affichage_resultat.exec()
         else:
             QMessageBox.warning(self, "Attention", f"Aucune quantité n'a été  encore vendu pour le produit '{produit}'")
             print('Aucune donnée trouvée pour la plage de dates spécifiée.')
@@ -197,7 +200,8 @@ class ShowHistoriqueQuantiteForProduct(QDialog):
         data = instance_data.show_historique_quantite_for_one_product(produit)
         if data:
             self.affichage_resultat = AfficherResultatQuantite(data)
-            self.affichage_resultat.show()
+            #self.affichage_resultat.show()
+            self.affichage_resultat.exec()
         else:
             print("Le produit n'a pas un historique de vente à afficher.")
             QMessageBox.warning(self, "Erreur", f"Le produit '{produit}' n'a pas un historique de vente à afficher.")

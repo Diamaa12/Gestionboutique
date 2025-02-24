@@ -329,23 +329,104 @@ class Boutiquehandler(QObject,):
         except Exception as e:
             print('Une erreur est survenue.', e)
             return 0
-    def show_vente(self):
+    def show_table_produit(self):
         try:
             cursor = self.connexion.cursor()
-            sql = ("SELECT * FROM ventes")
+            sql = ("SELECT * FROM produit")
+            cursor.execute(sql)
+            resultat = cursor.fetchall()
+            print(resultat)
+            #for row in resultat:
+            #    for item in row:
+            #        print(item)
+            #    print(row)
+            #print(resultat)
+            return resultat
+        except Exception as e:
+            #print('Erreur d accées à la base de données. ', e)
+            return None
+    def show_table_vente(self) -> Optional[list]:
+        try:
+            cursor = self.connexion.cursor()
+            sql = ("SELECT "
+                   " p.nom_produit, "
+                   " v.quantite_vendu, "
+                   " v.date_vente"
+                   " FROM produit p "
+                   " JOIN ventes v ON p.id_produit = v.id_produit ")
             cursor.execute(sql)
             result = cursor.fetchall()
             print(result)
-            for row in result:
-                for item in row:
-                    print(item)
-                print(row)
+            #for row in result:
+            #    for item in row:
+            #        print(item)
+            #    print(row)
             return result
         except Exception as e:
-            print('Une erreur est survenue.', e)
+            print('Une erreur est survenue lors de recupération de données de la table ventes', e)
             return None
-
-
+    def show_table_sommes(self):
+        try:
+            cursor = self.connexion.cursor()
+            sql = ("SELECT "
+                   " p.nom_produit, "
+                   " s.ttl_somme_vendu, "
+                   " s.ttl_somme_non_vendu, "
+                   " s.date "
+                   " FROM produit p "
+                   " JOIN sommes s ON p.id_produit = s.id_produit ")
+            cursor.execute(sql)
+            resultat = cursor.fetchall()
+            return resultat
+        except Exception as e:
+            print('Une erreur est survenue lors de recupération de données de la table sommes', e)
+            return None
+    def show_table_restant(self):
+        try:
+            cursor = self.connexion.cursor()
+            sql = ("SELECT "
+                   " p.nom_produit, "
+                   " r.quantite_restant, "
+                   " r.date"
+                   " FROM produit p "
+                   " JOIN restant r ON p.id_produit = r.id_produit ")
+            cursor.execute(sql)
+            resultat = cursor.fetchall()
+            return resultat
+        except Exception as e:
+            print('Une erreur est survenue lors de recupération de données de la table restant.', e)
+            return None
+    def show_table_historique_ventes(self):
+        try:
+            cursor = self.connexion.cursor()
+            sql = ("SELECT "
+                   " p.nom_produit, "
+                   " h.quantite, "
+                   " h.date_vente"
+                   " FROM produit p "
+                   " JOIN historique_ventes h ON p.id_produit = h.id_produit "
+                   " ORDER BY h.date_vente DESC")
+            cursor.execute(sql)
+            resultat = cursor.fetchall()
+            return resultat
+        except Exception as e:
+            print('Une erreur est survenue lors de recupération de données de la table historique_ventes.', e)
+            return None
+    def show_table_historique_product_quantite(self):
+        try:
+            cursor = self.connexion.cursor()
+            sql = ("SELECT "
+                   " p.nom_produit, "
+                   " h.historique_quantite, "
+                   " h.date "
+                   " FROM produit p "
+                   " JOIN historique_product_quantite h ON p.id_produit = h.id_produit ")
+            cursor.execute(sql)
+            resultat = cursor.fetchall()
+            return resultat
+        except Exception as e:
+            print('Une erreur est survenue lors de recupération de données de la table historique_product_quantite.', e)
+            return None
     def signal_show_total_somme_vendu(self, id_produit: int) -> Optional[float]:
         """
         Cette méthode n'est pas une fonction appelable ailleurs dans le code.

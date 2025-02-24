@@ -35,8 +35,5 @@ if __name__ == '__main__':
     window.resize(600, 800)
     window.center_window()
     window.show()
-    printer = QPrinter()
-    #window.handlerPrint(printer)
-    window.btn_scannen.click()
     exit_code = appctxt.app.exec()      # 2. Invoke appctxt.app.exec_()
     sys.exit(exit_code)

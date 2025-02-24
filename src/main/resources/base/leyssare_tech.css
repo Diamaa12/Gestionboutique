@@ -132,3 +132,44 @@ padding:0px;
 .finis{
     border:none;
 }
+.gestion_pdf_text{
+    width:auto;
+    font-family:'Tahoma', sans-serif;
+    font-size:12px;
+    font-weight:400;
+    color:white;
+}
+.btn_table_restants_pdf, .btn_table_vales_pdf, .btn_table_produit_pdf, .btn_table_somme_pdf, .btn_table_histoire_quanti_recu_pdf, .btn_table_histoire_ventes_pdf{
+    border-radius:4px;
+    color:#160b0b;
+    font-family: "Tahoma", sans-serif;
+    font-weight:500;
+    background-color:#e9e9e9;
+    padding:5px;
+}
+.btn_table_restants_pdf:hover{
+    background-color:#78b2ff;
+    color:white;
+}
+.btn_table_vales_pdf:hover{
+background-color:#78b2ff;
+    color:white;
+}
+.btn_table_produit_pdf:hover{
+    background-color:#78b2ff;
+    color:white;
+}
+
+.btn_table_somme_pdf:hover{
+    background-color:#78b2ff;
+    color:white;
+}
+.btn_table_histoire_quanti_recu_pdf:hover{
+    background-color:#78b2ff;
+    color:white;
+}
+
+.btn_table_histoire_ventes_pdf:hover{
+    background-color:#78b2ff;
+    color:white;
+  }

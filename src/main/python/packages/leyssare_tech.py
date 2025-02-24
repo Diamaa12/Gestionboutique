@@ -4,16 +4,18 @@ import json
 from functools import partial
 from itertools import zip_longest
 from operator import index
+from pathlib import Path
 
 from PySide6 import QtWidgets
 from PySide6.QtPrintSupport import QPrinter
-from PySide6.QtCore import Qt, Signal
+from PySide6.QtCore import Qt, Signal, QTimer
 from PySide6.QtGui import QTextDocument, QAction
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtWidgets import (QMainWindow, QMenuBar, QVBoxLayout, QHBoxLayout, QGridLayout,
                                QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QStyle, QApplication)
 
-
+#from .gestion_pdf.api_gestion_pdf import PdfGenerator
+from .gestion_pdf.api_gestion_pdf import PdfGenerator
 #from gestion_boutique_console import handler
 #from src.main.python.packages.api.constants import PATH_PRODUCT_NAME, PATH_NO_BOYED_PRODUCT, PATH_BOYED_PRODUCT, \
     #PATH_TTL_SOMME_FOR_ANY_UNITE, PATH_CELL_PRICE_PER_UNITE, PATH_BUYED_PRICE_PER_UNITE, \
@@ -63,6 +65,8 @@ class LeyssareTech(QMainWindow):
         self.api_db_postgre = DatabasePostgre()
         connexion = self.api_db_postgre.connect_to_db(*db_connector())
         self.api_boutique = Boutiquehandler(connexion)
+
+        self.api_pdf_generator = PdfGenerator()
 
         #self.items_restant = self.api_recup_quantite.retourne_quantite_restant()
         #print(self.items_restant)
@@ -181,9 +185,16 @@ class LeyssareTech(QMainWindow):
         current_date  = datetime.date.today().strftime('%d/%m/%Y')
         self.grand_ttl = QLabel()
         self.date = QLabel(f'Date: {current_date}')
-        self.btn_reset = QPushButton('Reset')
-        self.btn_scannen = QPushButton('Imprimer')
-        self.btn_data_download = QPushButton('Télécharger un copie')
+
+        self.lbl_title = QLabel("Cliquer sur les boutons d'en bas pour genérer"
+                                " des documents PDF, Les documents genérée sont dans le dossier 'documents/PDFS'")
+
+        self.btn_table_produit_pdf = QPushButton('Info produits')
+        self.btn_table_ventes_pdf = QPushButton('Info ventes')
+        self.btn_table_restants_pdf = QPushButton('Info restantes')
+        self.btn_table_somme_pdf = QPushButton('Info sommes')
+        self.btn_table_historique_ventes_pdf = QPushButton('Historique ventes')
+        self.btn_table_historique_quantite_recu_pdf = QPushButton('Quantités recu')
 
         self.product = QLabel('Produits:')
 
@@ -305,12 +316,17 @@ class LeyssareTech(QMainWindow):
 
         #Gestion de QVboxlayout de droite
         self.right_layout.addWidget(self.date, alignment=Qt.AlignmentFlag.AlignTop)
-        #On recupere la somme total dans l'api gestion_prix_quantite.somme_ttl_produit_vedue() et le passe au Qlabel
-        #ttl_somme_produits_vendue = self.api_gestion_prix_quantite.somme_ttl_produits_vendue()
+
         self.right_layout.addWidget(self.grand_ttl, alignment=Qt.AlignmentFlag.AlignCenter)
-        self.right_layout.addWidget(self.btn_data_download)
-        self.right_layout.addWidget(self.btn_reset)
-        self.right_layout.addWidget(self.btn_scannen)
+        self.right_layout.addWidget(self.lbl_title)
+
+        self.right_layout.addWidget(self.btn_table_produit_pdf)
+        self.right_layout.addWidget(self.btn_table_ventes_pdf)
+        self.right_layout.addWidget(self.btn_table_restants_pdf)
+        self.right_layout.addWidget(self.btn_table_somme_pdf)
+        self.right_layout.addWidget(self.btn_table_historique_ventes_pdf)
+        self.right_layout.addWidget(self.btn_table_historique_quantite_recu_pdf)
+
     def setup_connections(self):
 
         for index in range(len(self.product_names)):
@@ -327,6 +343,14 @@ class LeyssareTech(QMainWindow):
             self.edit_quantite_vendu[index].editingFinished.connect(
                 lambda idx=index: self.vendre_produit(idx)
             )
+        #Gestion d'impression de documents PDF
+        self.btn_table_produit_pdf.clicked.connect(self.imprime_table_produit_pdf)
+        self.btn_table_ventes_pdf.clicked.connect(self.imprime_table_ventes_pdf)
+        self.btn_table_restants_pdf.clicked.connect(self.imprime_table_restants_pdf)
+        self.btn_table_somme_pdf.clicked.connect(self.imprime_table_sommes)
+        self.btn_table_historique_ventes_pdf.clicked.connect(self.imprime_table_historique_ventes)
+        self.btn_table_historique_quantite_recu_pdf.clicked.connect(self.imprime_table_historique_quantite_recu)
+
         #Afficher les quantite_restante
         # Connexion du signal produit_mis_a_jour au QLabel
         #Signal déclencher pour afficher le quantité restante pour chaque produit.
@@ -337,6 +361,52 @@ class LeyssareTech(QMainWindow):
         self.api_boutique.qt_signal_ttl_somme_non_vendu_pour_chaque_produit.connect(self.show_ttl_somme_non_vendu_pour_chaque_produit)
         #Signal declencher pour calculer la sommes vendue de tous les produits
         self.api_boutique.qt_signal_total_somme_vendues_de_tous_les_produit.connect(self.ttl_sommes_vendu_de_tous_les_produit)
+
+    def imprime_table_produit_pdf(self):
+        data = self.api_boutique.show_table_produit()
+        if data:
+            self.api_pdf_generator.create_pdf_for_produit_table(data)
+            self.show_timed_message_box()
+            #self.show_timed_message_box()
+        else:
+            print("Impression de fichier PDF impossible.")
+    def imprime_table_ventes_pdf(self):
+        data = self.api_boutique.show_table_vente()
+        if data:
+            self.api_pdf_generator.create_pdf_for_vente_table(data)
+            self.show_timed_message_box()
+            #self.show_timed_message_box()
+        else:
+            print("Impression de fichier PDF impossible.")
+    def imprime_table_restants_pdf(self):
+        data = self.api_boutique.show_table_restant()
+        if data:
+            self.api_pdf_generator.create_pdf_for_table_restants(data)
+            self.show_timed_message_box()
+            #self.show_timed_message_box()
+        else:
+            print("Impression de fichier PDF impossible.")
+    def imprime_table_sommes(self):
+        data = self.api_boutique.show_table_sommes()
+        if data:
+            self.api_pdf_generator.create_pdf_for_table_sommes(data)
+            self.show_timed_message_box()
+        else:
+            print("Impression de fichier PDF impossible.")
+    def imprime_table_historique_ventes(self):
+        data = self.api_boutique.show_table_historique_ventes()
+        if data:
+            self.api_pdf_generator.create_pdf_for_table_historique_ventes(data)
+            self.show_timed_message_box()
+        else:
+            print("Impression de fichier PDF impossible.")
+    def imprime_table_historique_quantite_recu(self):
+        data = self.api_boutique.show_table_historique_product_quantite()
+        if data:
+            self.api_pdf_generator.create_pdf_for_table_historique_product_quantite(data)
+            self.show_timed_message_box()
+        else:
+            print("Impression de fichier PDF impossible.")
     def ttl_sommes_vendu_de_tous_les_produit(self):
         #On recupère la sommes de tous les ventes et on les affiches sur le Qlabel grand_ttl
         #A chaque fois qu'un produit est vendu, le signal defini dans api_boutique permet de mettre à jour automatiquement les donnés
@@ -684,9 +754,22 @@ class LeyssareTech(QMainWindow):
         self.total_vendu.setProperty('class', 'total_vendu')
         self.total_non_vendu.setProperty('class', 'total_non_vendu')
         self.grand_ttl.setProperty("class", "grand_total")
+        self.lbl_title.setProperty('class', 'gestion_pdf_text')
+
+        self.btn_table_restants_pdf.setProperty('class', 'btn_table_restants_pdf')
+        self.btn_table_ventes_pdf.setProperty('class', 'btn_table_vales_pdf')
+        self.btn_table_produit_pdf.setProperty('class', 'btn_table_produit_pdf')
+        self.btn_table_somme_pdf.setProperty('class', 'btn_table_somme_pdf')
+        self.btn_table_historique_quantite_recu_pdf.setProperty('class', 'btn_table_histoire_quanti_recu_pdf')
+        self.btn_table_historique_ventes_pdf.setProperty('class', 'btn_table_histoire_ventes_pdf')
+
 
         self.right_layout.setSpacing(20)
         self.right_layout.setContentsMargins(20, 20, 20, 20)
+
+        #self.lbl_title.setAlignment(Qt.AlignmentFlag.AlignJustify)
+        self.lbl_title.setFixedWidth(200)
+        self.lbl_title.setWordWrap(True)
 
         self.left_layout.setSpacing(25)
         self.left_layout.setContentsMargins(15, 5, 5, 25)
@@ -746,6 +829,31 @@ class LeyssareTech(QMainWindow):
         print(f"Le produit {produit_name} est dans la liste des produits.")
         if produit_name.strip() and not None:
             self.api_boutique.show_historique_quantite_for_one_product(produit_name)
+
+
+    #Un message box qui disparait automatiquement
+    def show_timed_message_box(self):
+        # Créer une boîte de dialogue QMessageBox
+        self.msg_box = QMessageBox(self)
+        self.msg_box.setWindowTitle("Notification")
+        #Renseigner le repertoir d'enregistrement des documents PDF
+        chemin = Path.home() / 'Desktop/PDF Documents'
+        self.msg_box.setText(f"Le Documents est enregistré dans: '{chemin}'")
+        self.msg_box.setIcon(QMessageBox.Icon.Information)
+        self.msg_box.setStandardButtons(QMessageBox.StandardButton.NoButton)  # Pas de boutons standards
+        self.msg_box.show()  # Afficher la boîte de dialogue
+
+        # Configurer un QTimer pour fermer la QMessageBox après 5 secondes
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+
+        # Connecter le timeout du timer pour fermer la boîte de dialogue
+        self.timer.timeout.connect(lambda: self.msg_box.done(0))  # `done(0)` ferme la boîte modale de manière sûre
+        self.timer.start(5000)  # 5000 ms = 5 secondes
+
+        # Afficher la QMessageBox de manière modale avec exec()
+        self.msg_box.exec()
+
 
 if __name__ == '__main__':
     import sys
