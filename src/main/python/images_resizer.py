@@ -3,10 +3,10 @@ from PIL import Image
 chemin = os.path.join(os.path.dirname(__file__), "../resources/images")
 if not os.path.exists(chemin):
     os.makedirs(chemin)
-image = Image.open(chemin + "/icons.png")
+image = Image.open(chemin + "/my_icone.png")
 
 #Tailles souhaitées
-sizes = [(64, 64), (128, 128), (256, 256)]
+sizes = [(16, 16), (24, 24), (48, 48)]
 try:
     for size in sizes:
         resize_image = image.resize(size)

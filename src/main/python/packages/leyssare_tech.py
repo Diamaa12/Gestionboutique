@@ -1,5 +1,6 @@
 import datetime
 import json
+import os
 #from distutils.command.install import value
 from functools import partial
 from itertools import zip_longest
@@ -13,6 +14,7 @@ from PySide6.QtGui import QTextDocument, QAction
 from PySide6.QtPrintSupport import QPrintDialog, QPrinter
 from PySide6.QtWidgets import (QMainWindow, QMenuBar, QVBoxLayout, QHBoxLayout, QGridLayout,
                                QWidget, QLabel, QLineEdit, QPushButton, QMessageBox, QStyle, QApplication)
+from dotenv import load_dotenv
 
 #from .gestion_pdf.api_gestion_pdf import PdfGenerator
 from .gestion_pdf.api_gestion_pdf import PdfGenerator
@@ -31,11 +33,14 @@ from .gestion_menu_bar import AddProduitBarDialog, DeleteProduitBarDialog, \
 
 
 def db_connector():
-    host = "localhost"
-    port = 5432
-    user = 'postgres'
-    password = 'Galle11'
-    database = 'gestion_boutique'
+    #On recupère le données de connexion contenu dans le fichier .env
+    env_path = Path(__file__).parent.parent.parent.parent.absolute() / 'Envdir/.data_base_login'
+    load_dotenv(dotenv_path=env_path)  # Charge les variables du .env dans les variables d'environnement
+    host = os.environ.get('PG_HOST')
+    port = os.environ.get('PG_PORT')
+    user = os.environ.get('PG_ADMIN_USER')
+    password = os.environ.get('PG_ADMIN_PASSWORD')
+    database = os.environ.get('DB_NAME')
     if host and password:
         print('Connexion reussi.')
     return [host, port, user, password, database]
@@ -187,7 +192,7 @@ class LeyssareTech(QMainWindow):
         self.date = QLabel(f'Date: {current_date}')
 
         self.lbl_title = QLabel("Cliquer sur les boutons d'en bas pour genérer"
-                                " des documents PDF, Les documents genérée sont dans le dossier 'documents/PDFS'")
+                                " des documents PDF, Les documents genérée sont enregistrés dans le dossier 'Bureau/PDF Documents'")
 
         self.btn_table_produit_pdf = QPushButton('Info produits')
         self.btn_table_ventes_pdf = QPushButton('Info ventes')
@@ -483,6 +488,7 @@ class LeyssareTech(QMainWindow):
                     prix_achat = float(prix_achat)
                     prix_vente = float(prix_vente)
                     self.api_boutique.insert_produit(produit_name, produit_quantite, prix_achat, prix_vente)
+                    self.api_boutique.insert_on_historique_product_quantite(produit_name, produit_quantite)
                     QMessageBox.information(self, "Succés", "Les donnés ont étés enregistré avec succés.")
                 else:
                     QMessageBox.warning(self, "Annulé", "L'inscription a été annulée.")
@@ -529,6 +535,7 @@ class LeyssareTech(QMainWindow):
                                                 QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No)
             if confirmation == QMessageBox.StandardButton.Yes:
                 self.api_boutique.insert_or_update_produit_vendu(produit_name, quantite_vendue)
+                self.api_boutique.insert_on_historique_ventes(produit_name, quantite_vendue)
             else:
                 print('Vente annulé')
                 QMessageBox.warning(self, "Annulé", 'La vente est annulé.')
@@ -856,9 +863,10 @@ class LeyssareTech(QMainWindow):
 
 
 if __name__ == '__main__':
-    import sys
-    from PySide6.QtWidgets import QApplication
-    app = QApplication(sys.argv)
-    main_window = LeyssareTech(ctx=app)
-    main_window.show()
-    sys.exit(app.exec())
+    pass
+   #import sys
+   #from PySide6.QtWidgets import QApplication
+   #app = QApplication(sys.argv)
+   #main_window = LeyssareTech(ctx=app)
+   #main_window.show()
+   #sys.exit(app.exec())

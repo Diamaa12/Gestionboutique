@@ -9,6 +9,7 @@ __pycache__/
 .env
 .secrets
 .myenv
+.data_base_login
 # Ignorer les fichiers de dépendances
 venv/
 node_modules/
@@ -18,7 +19,13 @@ dist/
 build/
 *.egg-info/
 target/
-NSIS_SCRIPT/	
+NSIS_SCRIPT/
+Envdir/
+main/icons/*
+main/resources/base
+main/resources/database
+main/resources/images
+main/resources/postgres_installateur
 # Ignorer les fichiers de logs
 *.log
 

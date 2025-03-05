@@ -223,7 +223,7 @@ class AfficherResultatForOneProduct(QDialog):
         self.table.setColumnCount(4)
         self.table.setRowCount(1)
 
-        self.table.setHorizontalHeaderLabels(["Id Produit", "Nom produit","Quantite vendue","TTl vendue"])
+        self.table.setHorizontalHeaderLabels(["Nom produit", "Quantite vendue", "Somme total vendue", "Date"])
         self.table.setSortingEnabled(True)
 
         # Masquer les numéros des lignes
@@ -258,18 +258,19 @@ class AfficherResultatForOneProduct(QDialog):
                 date_de_fin = date_de_fin.strftime('%d/%m/%Y')
             # Prépare les données pour affichage (en vérifiant l'existence des clés)
             title = f"La quantité vendue pour le produit '{data.get('nom_produit', 'Aucun produit')}' du {date_de_debut} au {date_de_fin}"
-            produit_id = f"{data.get('id_produit', 'Aucun produit')}"
+            #produit_id = f"{data.get('id_produit', 'Aucun produit')}"
             ttl_vendu = f"{data.get('total_quantite_vendu', 'Aucun')} Kg"
             somme_ttl_vendu = f" {somme_total_vendu} FGN"
             nom_produit = f"{data.get('nom_produit', 'Aucun')}"
-            print(produit_id)
-            print(type(produit_id))
+            #print(produit_id)
+            #print(type(produit_id))
             self.title.setText(title)
             # Affiche les données dans l'interface graphique
-            self.table.setItem(0,0,QTableWidgetItem(produit_id))
-            self.table.setItem(0,1,QTableWidgetItem(nom_produit))
-            self.table.setItem(0,2,QTableWidgetItem(ttl_vendu))
-            self.table.setItem(0,3,QTableWidgetItem(somme_ttl_vendu))
+            #self.table.setItem(0,0,QTableWidgetItem(produit_id))
+            self.table.setItem(0,0,QTableWidgetItem(nom_produit))
+            self.table.setItem(0,1,QTableWidgetItem(ttl_vendu))
+            self.table.setItem(0,2,QTableWidgetItem(somme_ttl_vendu))
+            self.table.setItem(0,3,QTableWidgetItem(f"{datetime.today().strftime('%d/%m/%Y')}"))
 
 
         else:

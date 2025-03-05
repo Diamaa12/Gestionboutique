@@ -1,9 +1,10 @@
+import logging
 import os
 from datetime import datetime
 from itertools import zip_longest
 from pathlib import Path
 from pydoc import describe
-
+from win32com.client import Dispatch
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch
@@ -15,14 +16,15 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet
-
-#from src.main.python.packages.api.gestion_boutique import Boutiquehandler, DatabasePostgre
-#from src.main.python.packages.leyssare_tech import db_connector
-
+from ..api.Product.gestion_logger import setup_logger_with_rotation
 
 class PdfGenerator:
     def __init__(self):
-
+        # Initialisation du logger
+        self.logguer = setup_logger_with_rotation('PDF_Generator', 'pdf_generator.log')
+        self.logguer.info("--" * 20)
+        self.logguer.info("Lancement de la classe PdfGenerator")
+        #On recupérer le chemin specifix vers le Deskotp
         self.directory = Path.home() / "Desktop/PDF Documents"
         if not os.path.exists(self.directory):
             os.makedirs(self.directory)
@@ -104,10 +106,12 @@ class PdfGenerator:
             ]
             try:
                 self.pdf.build(table_elements)
+                self.logguer.info(f"Donnés inserer dans le fichier: {pdf_table_produit_name}")
                 print(f"Le cocument: {pdf_table_produit_name} a été crée avec succés. ")
                 return True
             except PermissionError as e:
                 print(f"Erreur de permission: {e}")
+                self.logguer.error(f"Erreur de permission: {e} au niveau du fichier {pdf_table_produit_name}")
                 return False
             except Exception as e:
                 print(f"Une erreur inattendue est survenue: {e}")
@@ -167,9 +171,11 @@ class PdfGenerator:
         try:
             pdf.build(table_elements)
             print(f"Le cocument: {pdf_table_vente_name} a été crée avec succés. ")
+            self.logguer.info(f"Donnés inserer dans le fichier: {pdf_table_vente_name}")
             return True
         except PermissionError as e:
             print(f"Erreur de permission: {e}")
+            self.logguer.error(f"Erreur de permission: {e} au niveau du fichier {pdf_table_vente_name}")
             return False
         except Exception as e:
             print(f"Une erreur inattendue est survenue: {e}")
@@ -223,9 +229,11 @@ class PdfGenerator:
         try:
             pdf.build(table_elements)
             print(f"Le cocument: {pdf_table_somme_name} a été crée avec succés. ")
+            self.logguer.info(f"Donnés inserer dans le fichier: {pdf_table_somme_name}")
             return True
         except PermissionError as e:
             print(f"Erreur de permission: {e}")
+            self.logguer.error(f"Erreur de permission: {e} au niveau du fichier {pdf_table_somme_name}")
             return False
         except Exception as e:
             print(f"Une erreur inattendue est survenue: {e}")
@@ -273,10 +281,12 @@ class PdfGenerator:
         try:
             pdf.build(table_elements)
             print(f"Le cocument: {pdf_table_restants_name} a été crée avec succés. ")
+            self.logguer.info(f"Donnés inserer dans le fichier: {pdf_table_restants_name}")
             return True
 
         except PermissionError as e:
             print(f"Erreur de permission: {e}")
+            self.logguer.error(f"Erreur de permission: {e} au niveau du fichier {pdf_table_restants_name}")
             return False
 
         except Exception as e:
@@ -302,7 +312,7 @@ class PdfGenerator:
             quantite_vendues.append(items[1])
             date_ajout.append(items[2].strftime("%d/%m/%Y"))
         rows_table = list(zip(nom_produit, quantite_vendues, date_ajout))
-        header_table = ["Nom de produit", "Historique des ventes", "Date d'ajout"]
+        header_table = ["Nom de produit", "Historique des ventes / Kg", "Date d'ajout"]
 
         table_data = [header_table] + rows_table
 
@@ -325,10 +335,12 @@ class PdfGenerator:
         try:
             pdf.build(table_elements)
             print(f"Le cocument: {pdf_table_historique_ventes_name} a été crée avec succés. ")
+            self.logguer.info(f"Donnés inserer dans le fichier: {pdf_table_historique_ventes_name}")
             return True
 
         except PermissionError as e:
             print(f"Erreur de permission: {e}")
+            self.logguer.error(f"Erreur de permission: {e} au niveau du fichier {pdf_table_historique_ventes_name}")
             return False
 
         except Exception as e:
@@ -377,10 +389,12 @@ class PdfGenerator:
         try:
             pdf.build(table_elements)
             print(f"Le cocument: {pdf_table_historique_produit_quantite_name} a été crée avec succés. ")
+            self.logguer.info(f"Donnés inserer dans le fichier: {pdf_table_historique_produit_quantite_name}")
             return True
 
         except PermissionError as e:
             print(f"Erreur de permission: {e}")
+            self.logguer.error(f"Erreur de permission: {e} au niveau du fichier {pdf_table_historique_produit_quantite_name}")
             return False
 
         except Exception as e:

@@ -1,5 +1,7 @@
 import logging
+import os
 from datetime import datetime, date
+from pathlib import Path
 from typing import Optional, List
 
 import psycopg2
@@ -9,11 +11,12 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 from psycopg2.extras import LoggingConnection
 
 from .product_manager import ProductManager
+from .Product.gestion_logger import setup_logger_with_rotation
 
 # Configurer le logger
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger("PostgreSQL")
-
+#initialisation de la fonction de gestion de logging
+logger = setup_logger_with_rotation('DB Manager', 'gestion_de_base_donnees.log')
+logger.info("--"*20)
 class CustomLoggingConnection(LoggingConnection):
     #La méthode verifi si y a de message de type RAISE NOTICE dans les requetes sql
     #Si tel est le cas, elle l'affiche
@@ -35,11 +38,14 @@ class DatabasePostgre:
             #self.connexion.initialize(logger) # Initialise avec un curseur
             if self.connexion:
                 print("connexion à la base de données réussi.")
+                logger.info('Connexion à la base de données réussie.')
                 return self.connexion
             else:
                 print("La connexion a échouée.")
+
         except Exception as e:
             print(f"Erreur lors de la connexion : {e}")
+            logger.error(f"Erreur lors de la connexion à la base de données: {e}")
             return None
 
     def deconnect(self) -> None:
@@ -88,11 +94,14 @@ class Boutiquehandler(QObject,):
             val = (nom, stock, prix_achat, prix_vente, stock,)
             cursor.execute(query, val)
             self.connexion.commit()
+            logger.info('Données insérer avec succés dans la table produit.')
+
             #On inserer les donnés aussi dans la table historique_product_quantite.
-            self.insert_on_historique_product_quantite(nom, stock)
+            #self.insert_on_historique_product_quantite(nom, stock)
             print(f"{nom} est ajouter avec succés dans le stock")
         except Exception as e:
             print(f"Erreur lors de l'insertion de la ligne : {e}")
+            logger.error(f"Erreur lors de l'insertion de données dans la table Produit : {e}")
             return None
 
     def insert_or_update_produit_vendu(self, nom_produit:str, new_quantite_vendu:int = 1) -> Optional[None]:
@@ -119,13 +128,15 @@ class Boutiquehandler(QObject,):
                 query_insert = "INSERT INTO ventes (id_produit, quantite_vendu) VALUES (%s, %s);"
                 cursor.execute(query_insert, (id_produit, new_quantite_vendu))
                 print(f"Nouvelle vente ajoutée pour le produit ID {id_produit} avec une quantité de {new_quantite_vendu}.")
+                logger.info('Données insérées avec succés dans la table ventes.')
             else:
                 # 3. SINON faire un UPDATE pour augmenter la quantité vendue
                 query_update = f"UPDATE ventes SET quantite_vendu = quantite_vendu + {new_quantite_vendu}, date_vente = NOW() WHERE id_produit = {id_produit};"
                 cursor.execute(query_update)
+                logger.info('Mise à jour de données réussie pour la table ventes.')
                 print(f"Vente mise à jour pour le produit ID {id_produit}. Nouvelle quantité ajoutée : {new_quantite_vendu}.")
             #Insertion de donnés dans la table historique_ventes
-            self.insert_on_historique_ventes(id_produit, new_quantite_vendu)
+            #self.insert_on_historique_ventes(id_produit, new_quantite_vendu)
             #Gestion de décrementation de stock du colon qunatite_produit de la table produit
             self.decrement_stock(id_produit, new_quantite_vendu)
             #Emettre le signal de mise à jour de la table Restant
@@ -147,28 +158,31 @@ class Boutiquehandler(QObject,):
             self.connexion.commit()
         except psycopg2.Error as e:
             print(f"Erreur lors de l'ajout ou la mise à jour de la vente : {e}")
+            logger.error('Une erreur est survenu lors de l insertion de donnés dans la table ventes.', e)
             if self.connexion:
                 self.connexion.rollback()  # Annuler la transaction en cas d'erreur
     #insertion des donnés dans la table historique_ventes
-    def insert_on_historique_ventes(self, id_produit:int, quantite_vendu:int) -> None:
+    def insert_on_historique_ventes(self, nom_produit:str, quantite_vendue:int) -> None:
         try:
             cursor = self.connexion.cursor()
-            requete = "INSERT INTO historique_ventes (id_produit, quantite, date_vente) VALUES (%s, %s, NOW());"
-            cursor.execute(requete, (id_produit, quantite_vendu))
+            requete = "INSERT INTO historique_ventes (nom_produit, quantite_vendue, date) VALUES (%s, %s, NOW());"
+            cursor.execute(requete, (nom_produit, quantite_vendue))
             print("Données insérer avec succés dans la table historique_ventes.")
             self.connexion.commit()
+            logger.info(f"{quantite_vendue} kg a été vendu pour le produit: {nom_produit}.")
         except Exception as e:
             print(f"Erreur lors de l'insertion dans la table historique_ventes : {e}")
+            logger.error("Une erreur est survenue lors de l'insertion dans la table historique_ventes.", e)
             return None
 
-    def insert_on_historique_product_quantite(self, nom_produit, quantite_produit):
-        id_produit = self.get_product_id(nom_produit)
-        if id_produit:
+    def insert_on_historique_product_quantite(self, nom_produit, quantite_recu):
             try:
                 cursor = self.connexion.cursor()
-                requete = "INSERT INTO historique_product_quantite (id_produit, historique_quantite) VALUES (%s, %s);"
-                cursor.execute(requete, (id_produit, quantite_produit))
+                requete = "INSERT INTO historique_quantite_recu (nom_produit, quantite_recu, date) VALUES (%s, %s, NOW());"
+                cursor.execute(requete, (nom_produit, quantite_recu))
+                logger.info(f"{quantite_recu} kg ont été livré pour le produit: {nom_produit}.")
             except Exception as e:
+                logger.error("Une erreur est survenue lors de l'insertion dans la table historique_product_quantite.", e)
                 print(f"Erreur lors de l'insertion dans la table historique_product_quantite : {e}")
                 return None
     def get_product_id(self, product_name: str) -> int:
@@ -249,20 +263,38 @@ class Boutiquehandler(QObject,):
                 ORDER BY 
                     p.id_produit;
             """
-            cursor.execute(query, (id_produit, date_debut, date_fin))
-            result = cursor.fetchone()
+            requete = ("""
+                SELECT 
+                nom_produit, 
+                COALESCE(SUM(quantite_vendue), 0) AS ttl_vendue,
+                COALESCE(SUM(quantite_vendue), 0) * (
+                SELECT prix_vente 
+                FROM produit 
+                 WHERE nom_produit = %s LIMIT 1
+                ) AS ttl_prix_vendue,
+                date
+                FROM historique_ventes
+                WHERE nom_produit = %s 
+                AND (date::DATE BETWEEN %s AND %s)
+                GROUP BY  nom_produit, date;
+            """)
 
+            #cursor.execute(query, (id_produit, date_debut, date_fin))
+            cursor.execute(requete, (nom_produit, nom_produit, date_debut, date_fin))
+            result = cursor.fetchone()
+            print(result)
             if result:
                 # Organiser les données sous forme de dictionnaire
                 data = {
-                    "id_produit": result[0],
                     "total_quantite_vendu": result[1],
-                    "prix_vente": result[2],
-                    "somme_total_vendu": result[3],
-                    "nom_produit": result[4],
+                    "prix_vente": result[3],
+                    "somme_total_vendu": result[2],
+                    "nom_produit": result[0],
                     "date_de_debut": date_debut,
                     "date_de_fin": date_fin,
                 }
+                #print(data)
+                logger.info('Consulatation de données de la table historique_ventes.')
                 return data
             else:
                 print("Aucune vente trouvée pour ce produit dans la plage horaire spécifiée.")
@@ -310,6 +342,8 @@ class Boutiquehandler(QObject,):
             print(f"Une erreur est survenue lors de la mise à jour du stock : {e}")
             self.connexion.rollback()
 
+    '''Les fonctions à prefix show_ , permettent de recupérer les données des tables 
+    et les passer en arguments dans les fonctions de la classe PdfGenerator.'''
     def show_produit_values(self, nom_produit: str) -> Optional[list]:
         id_produit = self.get_product_id(nom_produit)
         if not id_produit:
@@ -374,7 +408,8 @@ class Boutiquehandler(QObject,):
                    " s.ttl_somme_non_vendu, "
                    " s.date "
                    " FROM produit p "
-                   " JOIN sommes s ON p.id_produit = s.id_produit ")
+                   " JOIN sommes s ON p.id_produit = s.id_produit "
+                   " ORDER BY s.date DESC")
             cursor.execute(sql)
             resultat = cursor.fetchall()
             return resultat
@@ -389,7 +424,8 @@ class Boutiquehandler(QObject,):
                    " r.quantite_restant, "
                    " r.date"
                    " FROM produit p "
-                   " JOIN restant r ON p.id_produit = r.id_produit ")
+                   " JOIN restant r ON p.id_produit = r.id_produit "
+                   " ORDER BY r.date DESC")
             cursor.execute(sql)
             resultat = cursor.fetchall()
             return resultat
@@ -406,7 +442,13 @@ class Boutiquehandler(QObject,):
                    " FROM produit p "
                    " JOIN historique_ventes h ON p.id_produit = h.id_produit "
                    " ORDER BY h.date_vente DESC")
-            cursor.execute(sql)
+            requete = ("SELECT "
+                       "nom_produit, "
+                       "quantite_vendue, "
+                       "date "
+                       "FROM historique_ventes "
+                       "ORDER BY date DESC")
+            cursor.execute(requete)
             resultat = cursor.fetchall()
             return resultat
         except Exception as e:
@@ -420,12 +462,19 @@ class Boutiquehandler(QObject,):
                    " h.historique_quantite, "
                    " h.date "
                    " FROM produit p "
-                   " JOIN historique_product_quantite h ON p.id_produit = h.id_produit ")
-            cursor.execute(sql)
+                   " JOIN historique_product_quantite h ON p.id_produit = h.id_produit "
+                   "ORDER BY h.date DESC")
+            requete = ("SELECT "
+                       "nom_produit, "
+                       "quantite_recu,"
+                       "date "
+                       "FROM historique_quantite_recu "
+                       "ORDER BY date DESC")
+            cursor.execute(requete)
             resultat = cursor.fetchall()
             return resultat
         except Exception as e:
-            print('Une erreur est survenue lors de recupération de données de la table historique_product_quantite.', e)
+            print('Une erreur est survenue lors de recupération de données de la table historique_quantite_recu.', e)
             return None
     def signal_show_total_somme_vendu(self, id_produit: int) -> Optional[float]:
         """
@@ -548,17 +597,13 @@ class Boutiquehandler(QObject,):
             print(f"L'erreur suivante: {e} est survennue. ")
             return None
     def show_historique_quantite_for_one_product(self, product_name:str) -> Optional[list]:
-        id_produit = self.get_product_id(product_name)
-        print(id_produit)
-        print(type(id_produit))
-        if id_produit:
             try:
                 cursor = self.connexion.cursor()
-                sql = ("SELECT historique_quantite, date "
-                       "FROM historique_product_quantite "
-                       "WHERE id_produit = %s "
+                sql = ("SELECT quantite_recu, date "
+                       "FROM historique_quantite_recu "
+                       "WHERE nom_produit = %s "
                        " order by date desc;")
-                cursor.execute(sql, (id_produit,))
+                cursor.execute(sql, (product_name,))
                 result = cursor.fetchall()
                 #On construit manuellement le dictionnaire ici.
                 columns = [desc[0] for desc in cursor.description]
