@@ -1,10 +1,9 @@
-from logging.handlers import RotatingFileHandler, SMTPHandler
 import logging
-from pathlib import Path
 import os
-from dotenv import load_dotenv
+from logging.handlers import RotatingFileHandler, SMTPHandler
+from pathlib import Path
 
-from .resource_factory import RessourceFactory
+from dotenv import load_dotenv
 
 max_bytes = 1024 * 1024 * 5
 chemin_fichier_log = Path(os.getenv("PROGRAMDATA")) / "BBLTech/logs"  # Recupérer le chemin en utilisant getenv
@@ -12,7 +11,7 @@ chemin_fichier_log.mkdir(parents=True, exist_ok=True)  # Créer le dossier si n�
 
 # Charger les variables du fichier .env
 #cibler le fichier .env
-env_path = Path(__file__).parent.parent.parent.parent.parent.absolute() / 'resources/base/.env'
+env_path = Path(__file__).parent.parent.parent.parent.absolute() / 'resources/base/.env'
 
 load_dotenv(dotenv_path=env_path)  # Charge les variables du .env dans les variables d'environnement
 
@@ -26,7 +25,7 @@ recipient_email = os.getenv('RECIPIENT_EMAIL')
 
 
 
-def setup_logger_with_rotation(name, log_file, max_bytes=max_bytes, backup_count=10):
+def rotations_logger(name, log_file, max_bytes=max_bytes, backup_count=10):
     if not all([email, password, smtp_server, smtp_port, recipient_email]):
         raise ValueError("Les variables d'environnement SMTP et/ou email sont manquantes.")
     """Configurer un logger avec rotation."""
@@ -64,12 +63,3 @@ def setup_logger_with_rotation(name, log_file, max_bytes=max_bytes, backup_count
 
     return logger
 
-
-# Exemple d'utilisation
-if __name__ == "__main__":
-    main_logger = setup_logger_with_rotation('Critical error', 'test.log')
-    main_logger.info('Message d\'information')
-    main_logger.warning('Message d\'avertissement')
-    main_logger.error('Message d\'erreur')
-    main_logger.critical('Message de critique')
-    print(env_path)

@@ -9,13 +9,15 @@ import platform
 from dotenv import load_dotenv
 
 from .gestion_logger import setup_logger_with_rotation
+from .resource_factory import RessourceFactory
 
 # Définir les paramètres de connexion PostgreSQL
 
 # Configuration
 BACKUP_FILE = r"C:\ProgramData\MyDBBackup\gestion_boutique.dump" if platform.system() == "Windows" else "/var/lib/myapp/mydatabase.dump"
 
-env_path = Path(__file__).parent.parent.parent.parent.parent.parent.absolute() / 'Envdir/.data_base_login'
+env_path = Path(__file__).parent.parent.parent.parent.parent.absolute() / 'resources/base/.data_base_login'
+print('Chemin vers fichiers .env', env_path)
 load_dotenv(dotenv_path=env_path)  # Charge les variables du .env dans les variables d'environnement
 
 

@@ -21,7 +21,7 @@ build/
 target/
 NSIS_SCRIPT/
 Envdir/
-main/icons/*
+main/icons/
 main/resources/base
 main/resources/database
 main/resources/images

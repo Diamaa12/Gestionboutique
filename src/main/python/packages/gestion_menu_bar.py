@@ -1,17 +1,28 @@
+import os
 from datetime import datetime
+from pathlib import Path
 
 from PySide6.QtCore import Signal, QDate, Qt
 from PySide6.QtWidgets import QDialog, QVBoxLayout, QLabel, QLineEdit, QPushButton, QComboBox, QDateEdit, QMessageBox, \
     QHBoxLayout, QTableWidget, QTableWidgetItem, QHeaderView
+from dotenv import load_dotenv
 
+from .api.Product.resource_factory import RessourceFactory
 from .api.gestion_boutique import Boutiquehandler, DatabasePostgre
 
-def db_connector():
-    host = "localhost"
-    port = 5432
-    user = 'postgres'
-    password = 'Galle11'
-    database = 'gestion_boutique'
+def db_connector(env_path=None):
+    #On recupère le données de connexion contenu dans le fichier .env
+    #env_path = Path(__file__).parent.parent.parent.parent.absolute() / 'Envdir/.data_base_login'
+    context = RessourceFactory.get_contexte()
+    ressource = context.get_resource('.data_base_login')
+    load_dotenv(dotenv_path=ressource)  # Charge les variables du .env dans les variables d'environnement
+    host = os.environ.get('PG_HOST')
+    port = os.environ.get('PG_PORT')
+    user = os.environ.get('PG_ADMIN_USER')
+    password = os.environ.get('PG_ADMIN_PASSWORD')
+    database = os.environ.get('DB_NAME')
+    if host and password:
+        print('Connexion reussi.')
     return [host, port, user, password, database]
 class AddProduitBarDialog(QDialog):
     produit_a_ajouter = Signal(str)

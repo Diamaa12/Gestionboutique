@@ -19,7 +19,7 @@ from dotenv import load_dotenv
 #from .gestion_pdf.api_gestion_pdf import PdfGenerator
 from .gestion_pdf.api_gestion_pdf import PdfGenerator
 #from gestion_boutique_console import handler
-#from src.main.python.packages.api.constants import PATH_PRODUCT_NAME, PATH_NO_BOYED_PRODUCT, PATH_BOYED_PRODUCT, \
+#from .api.constants import PATH_PRODUCT_NAME, PATH_NO_BOYED_PRODUCT, PATH_BOYED_PRODUCT, \
     #PATH_TTL_SOMME_FOR_ANY_UNITE, PATH_CELL_PRICE_PER_UNITE, PATH_BUYED_PRICE_PER_UNITE, \
     #PATH_TTL_SOMME_NOT_CELLED_PRODUCT_FOR_ANY_ITEM
 from .api.gestion_prix_et_quantite import GestionPrixQauntite
@@ -30,12 +30,16 @@ from .api.product_manager import ProductManager
 from .gestion_class_aditionnel import DialogConfirmation
 from .gestion_menu_bar import AddProduitBarDialog, DeleteProduitBarDialog, \
     HistoriqueProduitBarDialog, ShowHistoriqueQuantiteForProduct
+from .api.Product.resource_factory import RessourceFactory
 
 
 def db_connector():
     #On recupère le données de connexion contenu dans le fichier .env
-    env_path = Path(__file__).parent.parent.parent.parent.absolute() / 'Envdir/.data_base_login'
-    load_dotenv(dotenv_path=env_path)  # Charge les variables du .env dans les variables d'environnement
+    #env_path = Path(__file__).parent.parent.parent.parent.absolute() / 'Envdir/.data_base_login'
+
+    context = RessourceFactory.get_contexte()
+    ressource = context.get_resource('.data_base_login')
+    load_dotenv(dotenv_path=ressource)  # Charge les variables du .env dans les variables d'environnement
     host = os.environ.get('PG_HOST')
     port = os.environ.get('PG_PORT')
     user = os.environ.get('PG_ADMIN_USER')

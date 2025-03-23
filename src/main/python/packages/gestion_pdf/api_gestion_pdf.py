@@ -16,12 +16,13 @@ from reportlab.lib.utils import ImageReader
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.lib.styles import getSampleStyleSheet
-from ..api.Product.gestion_logger import setup_logger_with_rotation
-
+#from ..api.Product.gestion_logger import setup_logger_with_rotation
+#from .packages.api.Product.gestion_logger import setup_logger_with_rotation
+from .logger_management import rotations_logger
 class PdfGenerator:
     def __init__(self):
         # Initialisation du logger
-        self.logguer = setup_logger_with_rotation('PDF_Generator', 'pdf_generator.log')
+        self.logguer = rotations_logger('PDF_Generator', 'pdf_generator.log')
         self.logguer.info("--" * 20)
         self.logguer.info("Lancement de la classe PdfGenerator")
         #On recupérer le chemin specifix vers le Deskotp
@@ -33,8 +34,8 @@ class PdfGenerator:
 
     def create_pdf_for_produit_table(self, table_product_data):
 
-        title = "Tableau des produits"
-        paragraph = "Cette liste contient le nom la quantité le prix d'achat et le prix de vente d'un produit"
+        title = "Tableau de produits"
+        paragraph = "Cette liste contient le nom la quantité le prix d'achat et le prix de vente de chaque produit"
         pdf_table_produit_name = "table_de_produit.pdf"
 
         destination = os.path.join(self.directory, pdf_table_produit_name)
@@ -292,8 +293,8 @@ class PdfGenerator:
         except Exception as e:
             print(f"Une erreur inattendue est survenue: {e}")
     def create_pdf_for_table_historique_ventes(self, data):
-        title = "Tableau des historiques des ventes"
-        paragraph = "Historique des ventes effectué "
+        title = "Tableau  historique des ventes effectuées"
+        paragraph = "L'historique de chaque produit vendue est listé dans cette table."
         pdf_table_historique_ventes_name = "table_historique_ventes.pdf"
 
         destination = os.path.join(self.directory, pdf_table_historique_ventes_name)
@@ -347,7 +348,7 @@ class PdfGenerator:
             print(f"Une erreur inattendue est survenue: {e}")
     def create_pdf_for_table_historique_product_quantite(self, data):
         title = "Tableau des historiques des produits et quantites"
-        paragraph = "Historique des produits et quantites"
+        paragraph = "Les noms de produits et quantité recu sont inscrits dans cette table."
         pdf_table_historique_produit_quantite_name = "historique_de_quantite_recu.pdf"
 
         destination = os.path.join(self.directory, pdf_table_historique_produit_quantite_name)

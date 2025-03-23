@@ -152,7 +152,7 @@ class Boutiquehandler(QObject,):
             #le ttl de sommes de tous les produit vendue
             ttl_sommes_vendu_de_tous_les_produits = self.show_ttl_sommes_vendu_de_tous_les_produit()
             self.qt_signal_total_somme_vendues_de_tous_les_produit.emit(ttl_sommes_vendu_de_tous_les_produits)
-
+            logger.critical('Une erreur s\'est produite.')
             print(f"Signal émis pour {nom_produit}")
             # 4. Valider la transaction
             self.connexion.commit()
